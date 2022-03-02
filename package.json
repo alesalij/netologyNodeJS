@@ -4,5 +4,11 @@
   "main": "index.js",
   "repository": "git@github.com:alesalij/netologyNodeJS.git",
   "author": "aleksandr saliy <aleksandr.saliy@bwf.ru>",
-  "license": "MIT"
+  "license": "MIT",
+  "bin": {
+    "cmd": "index.js"
+  },
+  "dependencies": {
+    "yargs": "^17.3.1"
+  }
 }
