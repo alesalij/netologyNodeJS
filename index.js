@@ -17,9 +17,9 @@ const quest = function (q) {
 };
 
 async function q() {
-  let makeUpNumber = Math.round(Math.random());
+  let makeUpNumber = Math.round(Math.random()) + 1;
 
-  console.log(`Загадано число в 0 или 1`);
+  console.log(`Загадано число 1 или 2`);
   result = "0";
   ans1 = await quest("Введите ваш ответ: ");
   if (ans1 == makeUpNumber) {
