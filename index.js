@@ -2,6 +2,11 @@
 const { Console } = require("console");
 const readline = require("readline");
 const input = readline.createInterface(process.stdin, process.stdout);
+const path = require("path");
+const yargs = require("yargs");
+const { hideBin } = require("yargs/helpers");
+const argv = yargs(hideBin(process.argv)).argv;
+const fs = require("fs");
 
 const quest = function (q) {
   return new Promise((resolve, reject) => {
@@ -12,21 +17,36 @@ const quest = function (q) {
 };
 
 async function q() {
-  let min = Math.floor(Math.random() * 100);
-  let max = Math.floor(Math.random() * 100);
-  if (max < min) {
-    max += min;
-    min = max - min;
-    max = max - min;
+  let makeUpNumber = Math.round(Math.random());
+
+  console.log(`Загадано число в 0 или 1`);
+  result = "0";
+  ans1 = await quest("Введите ваш ответ: ");
+  if (ans1 == makeUpNumber) {
+    console.log("Вы выиграли");
+    result = "1";
+  } else {
+    console.log("Вы проиграли");
   }
-  let makeUpNumber = Math.floor(Math.random() * (max - min)) + min;
-  console.log(`Загадано число в диапазоне от ${min} до ${max}`);
-  do {
-    ans1 = await quest("");
-    if (ans1 < makeUpNumber) console.log("Больше");
-    else if (ans1 > makeUpNumber) console.log("Меньше");
-  } while (ans1 != makeUpNumber);
-  console.log(`Вы выиграли, загаданное число ${makeUpNumber}`);
+
   input.close();
+
+  fileName = argv._[0] ? argv._[0].toString() : "default";
+  fileName = fileName.includes(".txt") ? fileName : fileName + ".txt";
+  fs.stat(path.join(__dirname, "logs"), (err, stat) => {
+    if (err) {
+      fs.mkdir(path.join(__dirname, "logs"), () => {});
+    }
+  });
+
+  fileName = path.join(__dirname, "logs", fileName);
+
+  fs.stat(fileName, (err, stats) => {
+    if (err) {
+      fs.writeFile(fileName, result, () => {});
+    } else {
+      fs.appendFile(fileName, "," + result, () => {});
+    }
+  });
 }
 q();
