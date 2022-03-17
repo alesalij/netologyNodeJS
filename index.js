@@ -3,10 +3,9 @@ const { Console } = require("console");
 const readline = require("readline");
 const input = readline.createInterface(process.stdin, process.stdout);
 const path = require("path");
-const yargs = require("yargs");
-const { hideBin } = require("yargs/helpers");
-const argv = yargs(hideBin(process.argv)).argv;
-const fs = require("fs");
+const http = require("http");
+const myAPIKey = process.env.myAPIKey;
+const url = process.env.url;
 
 const quest = function (q) {
   return new Promise((resolve, reject) => {
@@ -17,36 +16,24 @@ const quest = function (q) {
 };
 
 async function q() {
-  let makeUpNumber = Math.round(Math.random()) + 1;
-
-  console.log(`Загадано число 1 или 2`);
-  result = "0";
-  ans1 = await quest("Введите ваш ответ: ");
-  if (ans1 == makeUpNumber) {
-    console.log("Вы выиграли");
-    result = "1";
-  } else {
-    console.log("Вы проиграли");
-  }
-
+  ans = await quest("Введите название города: ");
+  http
+    .get(`${url}?access_key=${myAPIKey}&query=${ans}`, (res) => {
+      res.on("data", function (chunk) {
+        json = JSON.parse(chunk);
+        console.log(
+          "На улице: " + JSON.stringify(json.current.weather_descriptions)
+        );
+        console.log("Температура: " + JSON.stringify(json.current.temperature));
+        console.log(
+          "Скорость ветра: " + JSON.stringify(json.current.wind_speed)
+        );
+        console.log("Давление: " + JSON.stringify(json.current.pressure));
+      });
+    })
+    .on("error", (e) => {
+      console.log(e);
+    });
   input.close();
-
-  fileName = argv._[0] ? argv._[0].toString() : "default";
-  fileName = fileName.includes(".txt") ? fileName : fileName + ".txt";
-  fs.stat(path.join(__dirname, "logs"), (err, stat) => {
-    if (err) {
-      fs.mkdir(path.join(__dirname, "logs"), () => {});
-    }
-  });
-
-  fileName = path.join(__dirname, "logs", fileName);
-
-  fs.stat(fileName, (err, stats) => {
-    if (err) {
-      fs.writeFile(fileName, result, () => {});
-    } else {
-      fs.appendFile(fileName, "," + result, () => {});
-    }
-  });
 }
 q();
