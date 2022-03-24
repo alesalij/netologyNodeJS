@@ -6,6 +6,14 @@
   "author": "aleksandr saliy <aleksandr.saliy@bwf.ru>",
   "license": "MIT",
   "dependencies": {
-    "express": "^4.17.3"
+    "express": "^4.17.3",
+    "express-form-data": "^2.0.17",
+    "node-unique-id-generator": "^0.1.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.15"
+  },
+  "scripts": {
+    "dev": "nodemon index.js"
   }
 }
