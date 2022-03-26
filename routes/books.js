@@ -3,19 +3,21 @@
 // создаем объект приложенияconst
 const express = require("express");
 const router = express.Router();
-const formData = require("express-form-data");
 const Book = require("../models/Book.js");
+const fileMiddleware = require("../middleware/file");
 const stor = {
   books: [],
 };
 
 // определяем обработчик для маршрутов
 
-router.post("/", (req, res) => {
+router.post("/", fileMiddleware.single("fileBook"), (req, res) => {
   // const { title, description } = req.body;
+  console.log(req.files);
   const { title, description, authors, favorite, fileCover, fileName } =
     req.body;
   const { books } = stor;
+  console.log(req.file);
   const newBook = new Book(
     title,
     description,
@@ -24,6 +26,7 @@ router.post("/", (req, res) => {
     fileCover,
     fileName
   );
+
   books.push(newBook);
   res.status(201);
   res.json(newBook);
