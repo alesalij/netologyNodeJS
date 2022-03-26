@@ -7,6 +7,7 @@ class Book {
     favorite = "",
     fileCover = "",
     fileName = "",
+    fileBook = "",
     id = uidGenerator.generateUniqueId()
   ) {
     this.id = id;
@@ -16,6 +17,7 @@ class Book {
     this.favorite = favorite;
     this.fileCover = fileCover;
     this.fileName = fileName;
+    this.fileBook = fileBook;
   }
 }
 module.exports = Book;

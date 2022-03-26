@@ -13,9 +13,16 @@ const stor = {
 
 router.post("/", fileMiddleware.single("fileBook"), (req, res) => {
   // const { title, description } = req.body;
-  console.log(req.files);
-  const { title, description, authors, favorite, fileCover, fileName } =
-    req.body;
+  console.log(req.file);
+  const {
+    title,
+    description,
+    authors,
+    favorite,
+    fileCover,
+    fileName,
+    fileBook,
+  } = req.body;
   const { books } = stor;
   console.log(req.file);
   const newBook = new Book(
@@ -24,7 +31,8 @@ router.post("/", fileMiddleware.single("fileBook"), (req, res) => {
     authors,
     favorite,
     fileCover,
-    fileName
+    fileName,
+    req.file.filename
   );
 
   books.push(newBook);
@@ -82,6 +90,18 @@ router.delete("/:id", (req, res) => {
     books.splice(idx, 1);
     res.status(200);
     res.json("OK");
+  } else {
+    res.status(404);
+    res.json("book not found");
+  }
+});
+router.get("/:id/download", (req, res) => {
+  const { books } = stor;
+  const { id } = req.params;
+  const idx = books.findIndex((el) => el.id == id);
+  if (idx !== -1) {
+    res.status(200);
+    res.json(books[idx]);
   } else {
     res.status(404);
     res.json("book not found");
