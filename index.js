@@ -3,14 +3,17 @@
 // создаем объект приложенияconst
 express = require("express");
 
-const usersRouter = require("./routes/users");
+const usersApiRouter = require("./routes/api/users");
+const booksApiRouter = require("./routes/api/books");
 const booksRouter = require("./routes/books");
 
 const app = express();
 
+app.set("view engine", "ejs");
+
 // подключение роутов
-app.use("/api/user", usersRouter);
-app.use("/api/books", booksRouter);
+app.use("/api/user", usersApiRouter);
+app.use("/api/books", booksApiRouter);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT);

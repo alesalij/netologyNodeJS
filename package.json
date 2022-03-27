@@ -6,6 +6,7 @@
   "author": "aleksandr saliy <aleksandr.saliy@bwf.ru>",
   "license": "MIT",
   "dependencies": {
+    "ejs": "^3.1.6",
     "express": "^4.17.3",
     "multer": "^1.4.4",
     "node-unique-id-generator": "^0.1.0"
