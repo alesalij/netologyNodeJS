@@ -29,8 +29,8 @@ router.post("/", fileMiddleware.single("fileBook"), (req, res) => {
     authors,
     favorite,
     fileCover,
-    fileName ? fileName : `${req.file.originalname}`,
-    req.file.filename
+    fileName ? fileName : `${req.file?.originalname}`,
+    req.file?.filename
   );
 
   books.push(newBook);
@@ -42,6 +42,7 @@ router.get("/", (req, res) => {
   res.status(200);
   res.json(books);
 });
+
 router.get("/:id", (req, res) => {
   const { books } = stor;
   const { id } = req.params;
@@ -55,23 +56,33 @@ router.get("/:id", (req, res) => {
   }
 });
 
-router.put("/:id", (req, res) => {
+router.put("/:id", fileMiddleware.single("fileBook"), (req, res) => {
   const { books } = stor;
   const { id } = req.params;
   const idx = books.findIndex((el) => el.id == id);
   if (idx !== -1) {
-    const { title, description, authors, favorite, fileCover, fileName } =
-      req.body;
-    const newBook = new Book(
+    const {
       title,
       description,
       authors,
       favorite,
       fileCover,
       fileName,
-      id
-    );
-    books[idx] = newBook;
+      fileBook,
+    } = req.body;
+
+    books[idx].title = title ? title : books[idx].title;
+    books[idx].description = description ? description : books[idx].description;
+    books[idx].authors = authors ? authors : books[idx].authors;
+    books[idx].favorite = favorite ? favorite : books[idx].favorite;
+    books[idx].fileCover = fileCover ? fileCover : books[idx].fileCover;
+    if (req.file) {
+      books[idx].fileName = fileName ? fileName : `${req.file?.originalname}`;
+      books[idx].fileBook = req.file?.filename;
+    } else {
+      books[idx].fileName = fileName ? fileName : books[idx].fileName;
+      books[idx].fileBook = fileBook ? fileBook : books[idx].fileBook;
+    }
 
     // res.status(200);
     res.json("OK");

@@ -12,6 +12,7 @@ const app = express();
 app.set("view engine", "ejs");
 
 // подключение роутов
+app.use("/books", booksRouter);
 app.use("/api/user", usersApiRouter);
 app.use("/api/books", booksApiRouter);
 

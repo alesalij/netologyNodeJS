@@ -1,0 +1,6 @@
+<%- include ("../partials/layout-start", {title:title})%> <%- include
+("../partials/navbar", {title:title})%>
+<h1><%= title %></h1>
+<% for( key in book) { %>
+<div><%= key %>: <%= book[key] %></div>
+<% } %> <%- include ("../partials/layout-end")%>
