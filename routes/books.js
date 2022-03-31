@@ -5,7 +5,6 @@ const express = require("express");
 const router = express.Router();
 const Book = require("../models/Book.js");
 const fileMiddleware = require("../middleware/file");
-const formdata = require("express-form-data");
 const stor = {
   books: [],
 };
@@ -29,45 +28,39 @@ router.post("/create", fileMiddleware.single("fileBook"), (req, res) => {
   } = req.body;
   const { books } = stor;
 
-  const newBook = new Book(
-    title,
-    description,
-    authors,
-    favorite,
-    fileCover,
-    fileName ? fileName : `${req.file.originalname}`,
-    req.file.filename
-  );
+  if (req.file) {
+    const newBook = new Book(
+      title,
+      description,
+      authors,
+      favorite,
+      fileCover,
+      fileName && fileName !== "" ? fileName : `${req.file?.originalname}`,
+      req.file.filename
+    );
+    books.push(newBook);
+  } else {
+    const newBook = new Book(
+      title,
+      description,
+      authors,
+      favorite,
+      fileCover,
+      fileName,
+      fileBook
+    );
+    books.push(newBook);
+  }
 
-  books.push(newBook);
-  res.status(201);
-  res.json(newBook);
+  res.redirect(/books/);
 });
 router.get("/create", (req, res) => {
-  const {
-    title,
-    description,
-    authors,
-    favorite,
-    fileCover,
-    fileName,
-    fileBook,
-  } = req.body;
-  const { books } = stor;
-
-  const newBook = new Book(
-    title,
-    description,
-    authors,
-    favorite,
-    fileCover,
-    fileName ? fileName : `${req.file.originalname}`,
-    req.file.filename
-  );
-
-  books.push(newBook);
-  res.status(201);
-  res.json(newBook);
+  book = new Book();
+  res.render("books/create", {
+    title: "Create book",
+    book: book,
+    typeForm: "create",
+  });
 });
 //get all books
 router.get("/", (req, res) => {
@@ -92,10 +85,32 @@ router.post("/update/:id", fileMiddleware.single("fileBook"), (req, res) => {
   const { books } = stor;
   const { id } = req.params;
   const idx = books.findIndex((el) => el.id == id);
-  //console.log(req);
-  console.log(req.body);
   if (idx !== -1) {
-    res.json(`ОК`);
+    const {
+      title,
+      description,
+      authors,
+      favorite,
+      fileCover,
+      fileName,
+      fileBook,
+    } = req.body;
+
+    books[idx].title = title ? title : books[idx].title;
+    books[idx].description = description ? description : books[idx].description;
+    books[idx].authors = authors ? authors : books[idx].authors;
+    books[idx].favorite = favorite ? favorite : books[idx].favorite;
+    books[idx].fileCover = fileCover ? fileCover : books[idx].fileCover;
+    if (req.file) {
+      books[idx].fileName = fileName ? fileName : `${req.file?.originalname}`;
+      books[idx].fileBook = req.file?.filename;
+    } else {
+      books[idx].fileName = fileName ? fileName : books[idx].fileName;
+      books[idx].fileBook = fileBook ? fileBook : books[idx].fileBook;
+    }
+
+    // res.status(200);
+    res.redirect("/books/");
   } else {
     res.status(404);
     res.json("book not found");

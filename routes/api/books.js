@@ -12,15 +12,8 @@ const stor = {
 // определяем обработчик для маршрутов
 
 router.post("/", fileMiddleware.single("fileBook"), (req, res) => {
-  const {
-    title,
-    description,
-    authors,
-    favorite,
-    fileCover,
-    fileName,
-    fileBook,
-  } = req.body;
+  const { title, description, authors, favorite, fileCover, fileName } =
+    req.body;
   const { books } = stor;
 
   const newBook = new Book(

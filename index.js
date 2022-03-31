@@ -8,6 +8,8 @@ const booksApiRouter = require("./routes/api/books");
 const booksRouter = require("./routes/books");
 
 const app = express();
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 
 app.set("view engine", "ejs");
 

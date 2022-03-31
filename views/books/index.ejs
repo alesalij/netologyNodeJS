@@ -16,14 +16,23 @@
     <tr>
       <th scope="row"><%= idx + 1 %></th>
       <td><%= el.title %></td>
-      <td><a href="/books/<%= el.id %>"> <%= el.description %> </a></td>
+      <td><%= el.description %> </a></td>
       <td>
-        <a
-          class="btn btn-primary"
-          role="button"
-          href="/books/update/<%= el.id %>"
-          >Link</a
-        >
+        <div class="btn-group" role="group" aria-label="Basic example">
+          <a
+            class="btn btn-success"
+            role="button"
+            href="/books/<%= el.id %>"
+          >
+            <i class="fa fa-eye" aria-hidden="true"></i>
+          </a>
+          <a
+            class="btn  btn-primary"
+            role="button"
+            href="/books/update/<%= el.id %>"
+            ><i class="fa fa-pencil" aria-hidden="true"></i
+          ></a>
+        </div>
       </td>
     </tr>
     <%})%>
@@ -32,3 +41,4 @@
 <%} else {%>
 <h3 class="mt-5">Книг пока нет</h3>
 <%}%> <%- include ("../partials/layout-end")%>
+<a class="btn btn-primary btn-lg btn-block" role="button" href="/books/create/">Add new book</a>
