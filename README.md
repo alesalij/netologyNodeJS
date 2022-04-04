@@ -1,87 +1,49 @@
-# netologyNodeJS
+1. docker pull node:15.14  
+15.14: Pulling from library/node
+41f38ce3010a: Pull complete 
+ce440adabe2a: Pull complete 
+b7c0a158e8c1: Pull complete 
+d82fbf846f6f: Pull complete 
+c190b75eb2b4: Pull complete 
+1ce0b6aec0ac: Pull complete 
+d461dd6a01f5: Pull complete 
+860542326137: Pull complete 
+fba155217a46: Pull complete 
+Digest: sha256:608bba799613b1ebf754034ae008849ba51e88b23271412427b76d60ae0d0627
+Status: Downloaded newer image for node:15.14
+docker.io/library/node:15.14
 
-1. docker pull busybox
-sing default tag: latest
-latest: Pulling from library/busybox
-aa5434a6d997: Pull complete 
-Digest: sha256:caa382c432891547782ce7140fb3b7304613d3b0438834dce1cad68896ab110a
-Status: Downloaded newer image for busybox:latest
-docker.io/library/busybox:latest
+2. docker run -i -t --name mynode -e NAME="Alexandr" -e SURNAME="Salij" node:15.14 env
+NODE_VERSION=15.14.0
+HOSTNAME=da2717a1b8c7
+YARN_VERSION=1.22.5
+HOME=/root
+NAME=Alexandr
+TERM=xterm
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+PWD=/
+SURNAME=Salij
 
-2. docker run -i -t --name pinger busybox ping netology.ru
-PING netology.ru (188.114.99.128): 56 data bytes
-64 bytes from 188.114.99.128: seq=0 ttl=37 time=6.739 ms
-64 bytes from 188.114.99.128: seq=1 ttl=37 time=17.905 ms
-64 bytes from 188.114.99.128: seq=2 ttl=37 time=18.904 ms
-64 bytes from 188.114.99.128: seq=3 ttl=37 time=19.306 ms
-64 bytes from 188.114.99.128: seq=4 ttl=37 time=10.056 ms
-64 bytes from 188.114.99.128: seq=5 ttl=37 time=16.424 ms
-64 bytes from 188.114.99.128: seq=6 ttl=37 time=18.243 ms
-64 bytes from 188.114.99.128: seq=7 ttl=37 time=21.086 ms
+3. docker exec -it mynode bin/sh
+echo Привет, $NAME $SURNAME!
+Привет, Alexandr Salij!
 
-3. docker ps -a
-CONTAINER ID   IMAGE     COMMAND              CREATED         STATUS                     PORTS     NAMES
-c305a3b8554f   busybox   "ping netology.ru"   3 minutes ago   Exited (0) 2 minutes ago             pinger
+4. docker stop mynode
+mynode
 
-4. docker logs -f -t pinger
-2022-04-03T17:30:18.195172419Z PING netology.ru (188.114.99.128): 56 data bytes
-2022-04-03T17:30:18.201871378Z 64 bytes from 188.114.99.128: seq=0 ttl=37 time=6.739 ms
-2022-04-03T17:30:19.219316837Z 64 bytes from 188.114.99.128: seq=1 ttl=37 time=17.905 ms
-2022-04-03T17:30:20.223138462Z 64 bytes from 188.114.99.128: seq=2 ttl=37 time=18.904 ms
-2022-04-03T17:30:21.226903462Z 64 bytes from 188.114.99.128: seq=3 ttl=37 time=19.306 ms
-2022-04-03T17:30:22.223256005Z 64 bytes from 188.114.99.128: seq=4 ttl=37 time=10.056 ms
-2022-04-03T17:30:23.235653588Z 64 bytes from 188.114.99.128: seq=5 ttl=37 time=16.424 ms
-2022-04-03T17:30:24.239364506Z 64 bytes from 188.114.99.128: seq=6 ttl=37 time=18.243 ms
-2022-04-03T17:30:25.247855798Z 64 bytes from 188.114.99.128: seq=7 ttl=37 time=21.086 ms
-2022-04-03T17:30:26.248661507Z 64 bytes from 188.114.99.128: seq=8 ttl=37 time=20.927 ms
-2022-04-03T17:30:27.247367715Z 64 bytes from 188.114.99.128: seq=9 ttl=37 time=17.216 ms
-2022-04-03T17:30:28.259742383Z 64 bytes from 188.114.99.128: seq=10 ttl=37 time=23.700 ms
-2022-04-03T17:30:29.260260800Z 64 bytes from 188.114.99.128: seq=11 ttl=37 time=18.403 ms
-2022-04-03T17:30:30.259764508Z 64 bytes from 188.114.99.128: seq=12 ttl=37 time=13.702 ms
-2022-04-03T17:30:31.259584634Z 64 bytes from 188.114.99.128: seq=13 ttl=37 time=8.881 ms
-2022-04-03T17:30:32.271758801Z 64 bytes from 188.114.99.128: seq=14 ttl=37 time=18.709 ms
-2022-04-03T17:30:33.275992843Z 64 bytes from 188.114.99.128: seq=15 ttl=37 time=19.733 ms
-2022-04-03T17:30:34.279917885Z 64 bytes from 188.114.99.128: seq=16 ttl=37 time=23.177 ms
-2022-04-03T17:30:35.279670761Z 64 bytes from 188.114.99.128: seq=17 ttl=37 time=19.263 ms
-2022-04-03T17:30:36.271892386Z 64 bytes from 188.114.99.128: seq=18 ttl=37 time=10.592 ms
-2022-04-03T17:30:37.284074137Z 64 bytes from 188.114.99.128: seq=19 ttl=37 time=21.393 ms
-2022-04-03T17:30:38.288782554Z 64 bytes from 188.114.99.128: seq=20 ttl=37 time=20.070 ms
-2022-04-03T17:30:39.283846846Z 64 bytes from 188.114.99.128: seq=21 ttl=37 time=9.628 ms
-2022-04-03T17:30:40.296037222Z 64 bytes from 188.114.99.128: seq=22 ttl=37 time=16.060 ms
-2022-04-03T17:30:41.300221389Z 64 bytes from 188.114.99.128: seq=23 ttl=37 time=18.754 ms
-2022-04-03T17:30:42.265759083Z 64 bytes from 188.114.99.128: seq=24 ttl=37 time=16.647 ms
-2022-04-03T17:30:43.278641875Z 64 bytes from 188.114.99.128: seq=25 ttl=37 time=22.768 ms
-2022-04-03T17:30:44.274111709Z 64 bytes from 188.114.99.128: seq=26 ttl=37 time=16.000 ms
-2022-04-03T17:30:45.285973376Z 64 bytes from 188.114.99.128: seq=27 ttl=37 time=22.666 ms
+5. docker rm mynode             
+mynode
 
-2022-04-03T17:30:45.387212960Z --- netology.ru ping statistics ---
-2022-04-03T17:30:45.387259043Z 28 packets transmitted, 28 packets received, 0% packet loss
-2022-04-03T17:30:45.387264543Z round-trip min/avg/max = 6.739/17.391/23.700 ms
-
-5. docker start pinger 
-pinger
-
-6. docker ps                                              
-CONTAINER ID   IMAGE     COMMAND              CREATED         STATUS          PORTS     NAMES
-c305a3b8554f   busybox   "ping netology.ru"   8 minutes ago   Up 13 seconds             pinger
-
-
-7. docker logs -f -t pinger
-2022-04-03T17:49:22.159717546Z PING netology.ru (188.114.99.128): 56 data bytes
-2022-04-03T17:49:22.170237838Z 64 bytes from 188.114.99.128: seq=0 ttl=37 time=10.448 ms
-2022-04-03T17:49:23.185662630Z 64 bytes from 188.114.99.128: seq=1 ttl=37 time=22.981 ms
-....
-2022-04-03T17:51:17.612023877Z 64 bytes from 188.114.99.128: seq=115 ttl=37 time=20.939 ms
-2022-04-03T17:51:18.615243586Z 64 bytes from 188.114.99.128: seq=116 ttl=37 time=22.152 ms
-2022-04-03T17:51:19.604068212Z 64 bytes from 188.114.99.128: seq=117 ttl=37 time=9.323 ms
-2022-04-03T17:51:20.619383712Z 64 bytes from 188.114.99.128: seq=118 ttl=37 time=23.457 ms
- всего 118 запросов
-
-8. docker rm pinger
-pinger
-
-9. docker rmi busybox
-Untagged: busybox:latest
-Untagged: busybox@sha256:caa382c432891547782ce7140fb3b7304613d3b0438834dce1cad68896ab110a
-Deleted: sha256:d38589532d9756ff743d2149a143bfad79833261ff18c24b22088183a651ff65
-Deleted: sha256:57d0c5e3b21e4fdac106cfee383d702b92cd433e6e45588153228670b616bc59
+docker rmi node:15.14
+Untagged: node:15.14
+Untagged: node@sha256:608bba799613b1ebf754034ae008849ba51e88b23271412427b76d60ae0d0627
+Deleted: sha256:c9b1cc6b53791ec5df6210b2d454d12b7a2f181f0a6b0e8f1210c8386473eba7
+Deleted: sha256:f0dc5ef6846f0abefa37bc88337c02110e9e238881415ca1871dc2607b786342
+Deleted: sha256:784ab9e2e6829251f4fb254d6316e01a98614d225f7cb9c58e2ac6a1ee4797a0
+Deleted: sha256:9c7f8185bbc7e06911cf165c28a5807eb0192b2ac627ae633f171af40bd235dd
+Deleted: sha256:ddc8c8426aa1933fa5d32a4da29e98ca985692706afa2f1c60975e749ec36aa1
+Deleted: sha256:c413e10d9fb99f013b730701affa6aadbec9450a668f993b6c950031c62a1f16
+Deleted: sha256:87bf19dbb220eb26f2ee81fdf55d72defc3e924a964e74f0e69fc358fa3c42cf
+Deleted: sha256:be106a4e95a9b1906e0289515498911495c3027a49570c4c1f7629aa6e7eb33b
+Deleted: sha256:2e550512412623943f8abceb74a40d22e4407bce50f418bda0375a4aaa51b075
+Deleted: sha256:5a4eda0f02e647b06a20c608c6c130e1058c6415e2b223acefaa43b6c464aa1b
