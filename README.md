@@ -13,7 +13,7 @@ Digest: sha256:608bba799613b1ebf754034ae008849ba51e88b23271412427b76d60ae0d0627
 Status: Downloaded newer image for node:15.14
 docker.io/library/node:15.14
 
-2. docker run -i -t --name mynode -e NAME="Alexandr" -e SURNAME="Salij" node:15.14 env
+2. docker run --rm -d --name first_node -v /data node:15.14 ls /var/first/data
 NODE_VERSION=15.14.0
 HOSTNAME=da2717a1b8c7
 YARN_VERSION=1.22.5
