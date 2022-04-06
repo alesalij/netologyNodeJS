@@ -13,28 +13,40 @@ Digest: sha256:608bba799613b1ebf754034ae008849ba51e88b23271412427b76d60ae0d0627
 Status: Downloaded newer image for node:15.14
 docker.io/library/node:15.14
 
-2. docker run --rm -d --name first_node -v /data node:15.14 ls /var/first/data
-NODE_VERSION=15.14.0
-HOSTNAME=da2717a1b8c7
-YARN_VERSION=1.22.5
-HOME=/root
-NAME=Alexandr
-TERM=xterm
-PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-PWD=/
-SURNAME=Salij
+2. docker run --rm -t -d --name first_node -v '/Users/alexandr/repos/netologyNodeJS/data':/var/first/data node:15.14
+1cdff16aad367f938272f9e7dfd56c892cec3b2fd2d7175af855813126cbec4f
 
-3. docker exec -it mynode bin/sh
-echo Привет, $NAME $SURNAME!
-Привет, Alexandr Salij!
+3. docker run --rm -t -d --name second_node -v '/Users/alexandr/repos/netologyNodeJS/data':/var/second/data node:15.14
+f7b32b2616a1a2d6429ff77b3b1a07e0f813ba96d9ab423eb066f007abf5bdba
 
-4. docker stop mynode
-mynode
+4. docker exec -it first_node sh                    
+    # cd var/first/data
+    # echo 'Hello, world.' >foo.txt        
+    # ls
+    foo.txt
 
-5. docker rm mynode             
-mynode
+5. cd data 
+ls
+foo.txt
+echo 'Hello, host.' >host.txt         
+ls
+foo.txt         host.txt
 
-docker rmi node:15.14
+6. docker exec -it second_node sh
+# cd var/second/data
+# ls
+foo.txt  host.txt
+
+7.  docker stop first_node
+first_node
+
+ docker stop second_node
+second_node
+
+8. контейнеры удалились после остановки из-за тега --rm при запуске
+
+
+9. docker rmi node:15.14  
 Untagged: node:15.14
 Untagged: node@sha256:608bba799613b1ebf754034ae008849ba51e88b23271412427b76d60ae0d0627
 Deleted: sha256:c9b1cc6b53791ec5df6210b2d454d12b7a2f181f0a6b0e8f1210c8386473eba7
