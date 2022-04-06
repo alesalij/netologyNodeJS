@@ -2,7 +2,7 @@
 
 // создаем объект приложенияconst
 express = require("express");
-
+path = require("path");
 const usersApiRouter = require("./routes/api/users");
 const booksApiRouter = require("./routes/api/books");
 const booksRouter = require("./routes/books");
@@ -12,7 +12,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 app.set("view engine", "ejs");
-
+app.set("views", path.join(__dirname, "/views"));
 // подключение роутов
 app.use("/books", booksRouter);
 app.use("/api/user", usersApiRouter);
