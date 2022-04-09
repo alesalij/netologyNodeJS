@@ -5,6 +5,16 @@ const express = require("express");
 const router = express.Router();
 const Book = require("../models/Book.js");
 const fileMiddleware = require("../middleware/file");
+
+const redis = require("redis");
+
+const REDIS_URL = process.env.REDIS_URL || "redis://localhost";
+
+const client = redis.createClient({ url: REDIS_URL });
+(async () => {
+  await client.connect();
+})();
+
 const stor = {
   books: [],
 };
@@ -69,12 +79,19 @@ router.get("/", (req, res) => {
 });
 
 // get book by id
-router.get("/:id", (req, res) => {
+router.get("/:id", async (req, res) => {
   const { books } = stor;
   const { id } = req.params;
   const idx = books.findIndex((el) => el.id == id);
+
   if (idx !== -1) {
-    res.render("books/view", { title: "View book", book: books[idx] });
+    const cnt = await client.incr(id);
+
+    res.render("books/view", {
+      title: "View book",
+      book: books[idx],
+      cnt: cnt,
+    });
   } else {
     res.status(404);
     res.json("book not found");
