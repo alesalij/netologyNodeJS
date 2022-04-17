@@ -3,7 +3,7 @@
 // создаем объект приложенияconst
 const express = require("express");
 const router = express.Router();
-const Book = require("../models/Book.js");
+const Book = require("../models/book.js");
 const fileMiddleware = require("../middleware/file");
 
 // const redis = require("redis");
@@ -20,7 +20,11 @@ const stor = {
 };
 
 [1, 2, 3].map((el) => {
-  const newBook = new Book(`book ${el}`, ` desc ${el}`, (id = `idnumber${el}`));
+  const newBook = new Book({
+    title: `book ${el}`,
+    description: ` desc ${el}`,
+    id: `idnumber${el}`,
+  });
   stor.books.push(newBook);
 });
 // определяем обработчик для маршрутов

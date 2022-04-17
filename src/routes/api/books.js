@@ -3,7 +3,7 @@
 // создаем объект приложенияconst
 const express = require("express");
 const router = express.Router();
-const Book = require("../../models/Book.js");
+const Book = require("../../models/book.js");
 const fileMiddleware = require("../../middleware/file");
 const stor = {
   books: [],

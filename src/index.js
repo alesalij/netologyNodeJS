@@ -1,6 +1,7 @@
 #! /usr/bin/env node
 
 // создаем объект приложенияconst
+require("dotenv").config();
 express = require("express");
 path = require("path");
 const usersApiRouter = require("./routes/api/users");
