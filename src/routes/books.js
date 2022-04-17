@@ -6,14 +6,14 @@ const router = express.Router();
 const Book = require("../models/Book.js");
 const fileMiddleware = require("../middleware/file");
 
-const redis = require("redis");
+// const redis = require("redis");
 
-const REDIS_URL = process.env.REDIS_URL || "redis://localhost";
+// const REDIS_URL = process.env.REDIS_URL || "redis://localhost";
 
-const client = redis.createClient({ url: REDIS_URL });
-(async () => {
-  await client.connect();
-})();
+// const client = redis.createClient({ url: REDIS_URL });
+// (async () => {
+//   await client.connect();
+// })();
 
 const stor = {
   books: [],

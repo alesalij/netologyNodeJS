@@ -6,7 +6,8 @@ path = require("path");
 const usersApiRouter = require("./routes/api/users");
 const booksApiRouter = require("./routes/api/books");
 const booksRouter = require("./routes/books");
-const counterRouter = require("./routes/counter");
+//const counterRouter = require("./routes/counter");
+const { default: mongoose } = require("mongoose");
 
 const app = express();
 app.use(express.json());
@@ -16,11 +17,21 @@ app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "/views"));
 // подключение роутов
 app.use("/books", booksRouter);
-app.use("/counter", counterRouter);
+//app.use("/counter", counterRouter);
 app.use("/api/user", usersApiRouter);
 app.use("/api/books", booksApiRouter);
 const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, () => {
-  console.log(`=== start server PORT ${PORT} ===`);
-});
+const connectDB = process.env.DB_CONNECT_STRING;
+console.log(connectDB);
+async function start() {
+  try {
+    await mongoose.connect(connectDB);
+    app.listen(PORT, () => {
+      console.log(`=== start server PORT ${PORT} ===`);
+    });
+  } catch {
+    console.error("mongoose Fail");
+  }
+}
+start();

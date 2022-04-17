@@ -1,10 +1,33 @@
+version: '3.7'
 services:
-  storage:
-    image: redis
+  mongodb:
+    image: mongo
+    restart: always
+    ports:     
+      - 27017:27017
+    environment: 
+      - MONGO_INITDB_ROOT_USERNAME=${DB_USERNAME:-root}
+      - MONGO_INITDB_ROOT_PASSWORD=${DB_PASSWORD:-password}
+      - MONGO_INITDB_DATABASE=${DB_NAME:-todos_database}
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports: 
+      - 8081:8081
+    environment:
+      # ME_CONFIG_MONGODB_URL: ${DB_CONNECT_STRING}
+      ME_CONFIG_MONGODB_SERVER: mongodb
+      ME_CONFIG_MONGODB_ADMINUSERNAME: ${DB_USERNAME:-root}
+      ME_CONFIG_MONGODB_ADMINPASSWORD: ${DB_PASSWORD:-example}
+    depends_on:
+      - mongodb
   netology_hwc:
     build: .
     ports:
       - 80:3002
     environment:
       - PORT=3002
-      - REDIS_URL=redis://storage
+      - DB_CONNECT_STRING=${DB_CONNECT_STRING}
+      # - REDIS_URL=redis://storage
+    depends_on:
+      - mongo-express
