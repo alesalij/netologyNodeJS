@@ -3,57 +3,76 @@
 // создаем объект приложенияconst
 const express = require("express");
 const router = express.Router();
-const Book = require("../../models/book.js");
+const Book = require("../../models/Book.js");
 const fileMiddleware = require("../../middleware/file");
-const stor = {
-  books: [],
-};
 
 // определяем обработчик для маршрутов
 
-router.post("/", fileMiddleware.single("fileBook"), (req, res) => {
-  const { title, description, authors, favorite, fileCover, fileName } =
-    req.body;
-  const { books } = stor;
-
-  const newBook = new Book(
+router.post("/", fileMiddleware.single("fileBook"), async (req, res) => {
+  const {
     title,
     description,
     authors,
     favorite,
     fileCover,
-    fileName ? fileName : `${req.file?.originalname}`,
-    req.file?.filename
-  );
-
-  books.push(newBook);
-  res.status(201);
-  res.json(newBook);
+    fileName,
+    fileBook,
+  } = req.body;
+  newBook = "";
+  if (req.file) {
+    newBook = new Book({
+      title: title,
+      description: description,
+      authors: authors,
+      favorite: favorite,
+      fileCover: fileCover,
+      fileName:
+        fileName && fileName !== "" ? fileName : `${req.file?.originalname}`,
+      fileBook: req.file.filename,
+    });
+  } else {
+    newBook = new Book({
+      title: title,
+      description: description,
+      authors: authors,
+      favorite: favorite,
+      fileCover: fileCover,
+      fileName: fileName,
+      fileBook: fileBook,
+    });
+  }
+  try {
+    await newBook.save();
+    res.status(201);
+    res.json(newBook);
+  } catch (e) {
+    console.log("Fail Create", e);
+  }
 });
-router.get("/", (req, res) => {
-  const { books } = stor;
+
+router.get("/", async (req, res) => {
+  const books = await Book.find();
   res.status(200);
   res.json(books);
 });
 
-router.get("/:id", (req, res) => {
-  const { books } = stor;
+router.get("/:id", async (req, res) => {
   const { id } = req.params;
-  const idx = books.findIndex((el) => el.id == id);
-  if (idx !== -1) {
+  const book = await Book.findById(id);
+  if (book) {
     res.status(200);
-    res.json(books[idx]);
+    res.json(book);
   } else {
     res.status(404);
     res.json("book not found");
   }
 });
 
-router.put("/:id", fileMiddleware.single("fileBook"), (req, res) => {
-  const { books } = stor;
+router.put("/:id", fileMiddleware.single("fileBook"), async (req, res) => {
   const { id } = req.params;
-  const idx = books.findIndex((el) => el.id == id);
-  if (idx !== -1) {
+  const book = await Book.findById(id);
+
+  if (book !== undefined) {
     const {
       title,
       description,
@@ -63,19 +82,16 @@ router.put("/:id", fileMiddleware.single("fileBook"), (req, res) => {
       fileName,
       fileBook,
     } = req.body;
-
-    books[idx].title = title ? title : books[idx].title;
-    books[idx].description = description ? description : books[idx].description;
-    books[idx].authors = authors ? authors : books[idx].authors;
-    books[idx].favorite = favorite ? favorite : books[idx].favorite;
-    books[idx].fileCover = fileCover ? fileCover : books[idx].fileCover;
-    if (req.file) {
-      books[idx].fileName = fileName ? fileName : `${req.file?.originalname}`;
-      books[idx].fileBook = req.file?.filename;
-    } else {
-      books[idx].fileName = fileName ? fileName : books[idx].fileName;
-      books[idx].fileBook = fileBook ? fileBook : books[idx].fileBook;
-    }
+    newBook = {
+      title: title,
+      description: description,
+      authors: authors,
+      favorite: favorite,
+      fileCover: fileCover,
+      fileName: fileName,
+      fileBook: fileBook,
+    };
+    await Book.findByIdAndUpdate(id, newBook);
 
     // res.status(200);
     res.json("OK");
@@ -84,11 +100,11 @@ router.put("/:id", fileMiddleware.single("fileBook"), (req, res) => {
     res.json("book not found");
   }
 });
-router.delete("/:id", (req, res) => {
-  const { books } = stor;
+
+router.delete("/:id", async (req, res) => {
   const { id } = req.params;
-  const idx = books.findIndex((el) => el.id == id);
-  if (idx !== -1) {
+  result = await Book.findByIdAndDelete(id);
+  if (result) {
     books.splice(idx, 1);
     res.status(200);
     res.json("OK");

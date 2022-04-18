@@ -3,8 +3,10 @@
 // создаем объект приложенияconst
 const express = require("express");
 const router = express.Router();
-const Book = require("../models/book.js");
+const Book = require("../models/Book.js");
 const fileMiddleware = require("../middleware/file");
+const uidGenerator = require("node-unique-id-generator");
+const book = require("../models/Book.js");
 
 // const redis = require("redis");
 
@@ -15,22 +17,10 @@ const fileMiddleware = require("../middleware/file");
 //   await client.connect();
 // })();
 
-const stor = {
-  books: [],
-};
-
-[1, 2, 3].map((el) => {
-  const newBook = new Book({
-    title: `book ${el}`,
-    description: ` desc ${el}`,
-    id: `idnumber${el}`,
-  });
-  stor.books.push(newBook);
-});
 // определяем обработчик для маршрутов
 
 // create book
-router.post("/create", fileMiddleware.single("fileBook"), (req, res) => {
+router.post("/create", fileMiddleware.single("fileBook"), async (req, res) => {
   const {
     title,
     description,
@@ -40,36 +30,41 @@ router.post("/create", fileMiddleware.single("fileBook"), (req, res) => {
     fileName,
     fileBook,
   } = req.body;
-  const { books } = stor;
-
+  newBook = "";
   if (req.file) {
-    const newBook = new Book(
-      title,
-      description,
-      authors,
-      favorite,
-      fileCover,
-      fileName && fileName !== "" ? fileName : `${req.file?.originalname}`,
-      req.file.filename
-    );
-    books.push(newBook);
+    newBook = new Book({
+      title: title,
+      description: description,
+      authors: authors,
+      favorite: favorite,
+      fileCover: fileCover,
+      fileName:
+        fileName && fileName !== "" ? fileName : `${req.file?.originalname}`,
+      fileBook: req.file.filename,
+    });
   } else {
-    const newBook = new Book(
-      title,
-      description,
-      authors,
-      favorite,
-      fileCover,
-      fileName,
-      fileBook
-    );
-    books.push(newBook);
+    newBook = new Book({
+      title: title,
+      description: description,
+      authors: authors,
+      favorite: favorite,
+      fileCover: fileCover,
+      fileName: fileName,
+      fileBook: fileBook,
+    });
   }
-
-  res.redirect(/books/);
+  try {
+    await newBook.save();
+    res.redirect(/books/);
+  } catch (e) {
+    console.log("Fail Create", e);
+  }
 });
 router.get("/create", (req, res) => {
-  book = new Book();
+  const book = new Book({});
+  keys = Object.keys(book.schema.obj);
+
+  console.log(keys);
   res.render("books/create", {
     title: "Create book",
     book: book,
@@ -77,24 +72,22 @@ router.get("/create", (req, res) => {
   });
 });
 //get all books
-router.get("/", (req, res) => {
-  const { books } = stor;
+router.get("/", async (req, res) => {
+  const books = await Book.find();
   res.render("books", { title: "All books", books: books });
 });
 
 // get book by id
 router.get("/:id", async (req, res) => {
-  const { books } = stor;
   const { id } = req.params;
-  const idx = books.findIndex((el) => el.id == id);
+  const book = await Book.findById(id);
 
-  if (idx !== -1) {
-    const cnt = await client.incr(id);
+  if (book !== undefined) {
+    // const cnt = await client.incr(id);
 
     res.render("books/view", {
       title: "View book",
-      book: books[idx],
-      cnt: cnt,
+      book: book,
     });
   } else {
     res.status(404);
@@ -102,51 +95,68 @@ router.get("/:id", async (req, res) => {
   }
 });
 //update book
-router.post("/update/:id", fileMiddleware.single("fileBook"), (req, res) => {
-  const { books } = stor;
-  const { id } = req.params;
-  const idx = books.findIndex((el) => el.id == id);
-  if (idx !== -1) {
-    const {
-      title,
-      description,
-      authors,
-      favorite,
-      fileCover,
-      fileName,
-      fileBook,
-    } = req.body;
+router.post(
+  "/update/:id",
+  fileMiddleware.single("fileBook"),
+  async (req, res) => {
+    const { id } = req.params;
+    const book = await Book.findById(id);
 
-    books[idx].title = title ? title : books[idx].title;
-    books[idx].description = description ? description : books[idx].description;
-    books[idx].authors = authors ? authors : books[idx].authors;
-    books[idx].favorite = favorite ? favorite : books[idx].favorite;
-    books[idx].fileCover = fileCover ? fileCover : books[idx].fileCover;
-    if (req.file) {
-      books[idx].fileName = fileName ? fileName : `${req.file?.originalname}`;
-      books[idx].fileBook = req.file?.filename;
+    if (book !== undefined) {
+      const {
+        title,
+        description,
+        authors,
+        favorite,
+        fileCover,
+        fileName,
+        fileBook,
+      } = req.body;
+      newBook = {
+        title: title,
+        description: description,
+        authors: authors,
+        favorite: favorite,
+        fileCover: fileCover,
+        fileName: fileName,
+        fileBook: fileBook,
+      };
+      await Book.findByIdAndUpdate(id, newBook);
+
+      // res.status(200);
+      res.redirect("/books/");
     } else {
-      books[idx].fileName = fileName ? fileName : books[idx].fileName;
-      books[idx].fileBook = fileBook ? fileBook : books[idx].fileBook;
+      res.status(404);
+      res.json("book not found");
     }
+  }
+);
+router.get("/update/:id", async (req, res) => {
+  const { id } = req.params;
 
-    // res.status(200);
-    res.redirect("/books/");
+  const book = await Book.findById(id);
+
+  if (book !== undefined) {
+    res.render("books/update", {
+      title: "Update book",
+      book: book,
+      typeForm: "update",
+    });
   } else {
     res.status(404);
     res.json("book not found");
   }
 });
-router.get("/update/:id", (req, res) => {
-  const { books } = stor;
+router.get("/delete/:id", async (req, res) => {
   const { id } = req.params;
-  const idx = books.findIndex((el) => el.id == id);
-  if (idx !== -1) {
-    res.render("books/update", {
-      title: "Update book",
-      book: books[idx],
-      typeForm: "update",
-    });
+
+  const book = await Book.findById(id);
+
+  if (book !== undefined) {
+    result = await Book.findByIdAndDelete(id);
+    console.log(result);
+
+    res.redirect("/books/");
   } else {
     res.status(404);
     res.json("book not found");

@@ -22,16 +22,22 @@
           <a
             class="btn btn-success"
             role="button"
-            href="/books/<%= el.id %>"
+            href="/books/<%= el._id %>"
           >
             <i class="fa fa-eye" aria-hidden="true"></i>
           </a>
           <a
             class="btn  btn-primary"
             role="button"
-            href="/books/update/<%= el.id %>"
+            href="/books/update/<%= el._id %>"
             ><i class="fa fa-pencil" aria-hidden="true"></i
           ></a>
+          <a
+          class="btn  btn-danger"
+          role="button"
+          href="/books/delete/<%= el._id %>"
+          ><i class="fa fa-trash" aria-hidden="true"></i
+        ></a>
         </div>
       </td>
     </tr>

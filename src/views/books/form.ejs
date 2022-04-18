@@ -1,6 +1,6 @@
 <form method="POST" enctype="multipart/form-data">
-  <%   Object.keys(book).forEach((key,index)=>{
-    if(index>0&&index<Object.keys(book).length-1){
+  <%   Object.keys(book.schema.obj).forEach((key,index)=>{
+    if(index>=0&&index<Object.keys(book.schema.obj).length-1){
  %>
   <div class="row mb-3">
     <label class="col-sm-2 col-form-label"><%= key %>:</label>
