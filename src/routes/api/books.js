@@ -6,6 +6,15 @@ const router = express.Router();
 const Book = require("../../models/Book.js");
 const fileMiddleware = require("../../middleware/file");
 
+const isAutintificated = (req, res, next) => {
+  if (!req.isAuthenticated || !req.isAuthenticated()) {
+    if (req.session) {
+      req.session.returnTo = req.originalUrl || req.url;
+    }
+    return res.redirect("/login");
+  }
+  next();
+};
 // определяем обработчик для маршрутов
 
 router.post("/", fileMiddleware.single("fileBook"), async (req, res) => {
@@ -50,7 +59,7 @@ router.post("/", fileMiddleware.single("fileBook"), async (req, res) => {
   }
 });
 
-router.get("/", async (req, res) => {
+router.get("/", isAutintificated, async (req, res) => {
   const books = await Book.find();
   res.status(200);
   res.json(books);

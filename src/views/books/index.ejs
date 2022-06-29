@@ -19,25 +19,11 @@
       <td><%= el.description %> </a></td>
       <td>
         <div class="btn-group" role="group" aria-label="Basic example">
-          <a
-            class="btn btn-success"
-            role="button"
-            href="/books/<%= el._id %>"
-          >
+          <a class="btn btn-success" role="button" href="/books/<%= el._id %>">
             <i class="fa fa-eye" aria-hidden="true"></i>
           </a>
-          <a
-            class="btn  btn-primary"
-            role="button"
-            href="/books/update/<%= el._id %>"
-            ><i class="fa fa-pencil" aria-hidden="true"></i
-          ></a>
-          <a
-          class="btn  btn-danger"
-          role="button"
-          href="/books/delete/<%= el._id %>"
-          ><i class="fa fa-trash" aria-hidden="true"></i
-        ></a>
+          <a class="btn  btn-primary" role="button" href="/books/update/<%= el._id %>"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+          <a class="btn  btn-danger" role="button" href="/books/delete/<%= el._id %>"><i class="fa fa-trash" aria-hidden="true"></i></a>
         </div>
       </td>
     </tr>
@@ -46,5 +32,7 @@
 </table>
 <%} else {%>
 <h3 class="mt-5">Книг пока нет</h3>
-<%}%> <%- include ("../partials/layout-end")%>
-<a class="btn btn-primary btn-lg btn-block" role="button" href="/books/create/">Add new book</a>
+<%}%> 
+
+<a class="btn btn-primary btn-lg btn-block" role="button" href="/books/create/">Add new book</ßa>
+<%- include ("../partials/layout-end")%>

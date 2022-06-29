@@ -28,6 +28,7 @@ services:
     environment:
       - PORT=3002
       - DB_CONNECT_STRING=${DB_CONNECT_STRING}
+      - COOKIE_SECRET=${COOKIE_SECRET}
       # - REDIS_URL=redis://storage
     depends_on:
       - mongo-express
