@@ -7,7 +7,6 @@ const User = require("../../models/User.js");
 const router = express.Router();
 passport.use(
   new LocalStrategy(async function verify(username, password, cb) {
-    console.log(username);
     user = await User.findOne({ user: username });
     if (user) {
       if (user.password === password) {

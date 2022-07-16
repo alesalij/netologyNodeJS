@@ -3,9 +3,9 @@
 // создаем объект приложенияconst
 const express = require("express");
 const router = express.Router();
-const Book = require("../models/Book.js");
+const { Book } = require("../models/Book.js");
 const fileMiddleware = require("../middleware/file");
-const uidGenerator = require("node-unique-id-generator");
+
 const isAutintificated = (req, res, next) => {
   if (!req.isAuthenticated || !req.isAuthenticated()) {
     if (req.session) {
@@ -15,23 +15,7 @@ const isAutintificated = (req, res, next) => {
   }
   next();
 };
-
-// const server = http.Server(app);
-// const io = socketIO(server);
-// app.get('/', (req, res) => {
-//   io.on('connection', (socket) => {const {id} = socket;
-//   console.log(`Socket connected: ${id}`);
-//       socket.on('disconnect', () => {console.log(`Socket disconnected: ${id}`);
-//     })
-//   })
-// const redis = require("redis");
-
-// const REDIS_URL = process.env.REDIS_URL || "redis://localhost";
-
-// const client = redis.createClient({ url: REDIS_URL });
-// (async () => {
-//   await client.connect();
-// })();
+const { container } = require("../container.js");
 
 // определяем обработчик для маршрутов
 
@@ -40,6 +24,7 @@ router.post(
   "/create",
   isAutintificated,
   fileMiddleware.single("fileBook"),
+
   async (req, res) => {
     const {
       title,
@@ -74,7 +59,9 @@ router.post(
       });
     }
     try {
-      await newBook.save();
+      const repo = container.get("BOOKS_REPOSITORY");
+      await repo.createBook(newBook);
+
       res.redirect(/books/);
     } catch (e) {
       console.log("Fail Create", e);
@@ -94,14 +81,18 @@ router.get("/create", (req, res) => {
 });
 //get all books
 router.get("/", isAutintificated, async (req, res) => {
-  const books = await Book.find();
+  const repo = container.get("BOOKS_REPOSITORY");
+  const books = await repo.getBooks();
+
   res.render("books", { title: "All books", books: books });
 });
 
 // get book by id
 router.get("/:id", isAutintificated, async (req, res) => {
   const { id } = req.params;
-  const book = await Book.findById(id);
+
+  const repo = container.get("BOOKS_REPOSITORY");
+  const book = await repo.getBook(id);
 
   if (book !== undefined) {
     // const cnt = await client.incr(id);
@@ -122,7 +113,9 @@ router.post(
   fileMiddleware.single("fileBook"),
   async (req, res) => {
     const { id } = req.params;
-    const book = await Book.findById(id);
+    const repo = container.get("BOOKS_REPOSITORY");
+
+    const book = await repo.getBook(id);
 
     if (book !== undefined) {
       const {
@@ -143,7 +136,9 @@ router.post(
         fileName: fileName,
         fileBook: fileBook,
       };
-      await Book.findByIdAndUpdate(id, newBook);
+      await repo.updateBook(id, newBook);
+
+      //await Book.findByIdAndUpdate(id, newBook);
 
       // res.status(200);
       res.redirect("/books/");
@@ -157,7 +152,8 @@ router.post(
 router.get("/update/:id", isAutintificated, async (req, res) => {
   const { id } = req.params;
 
-  const book = await Book.findById(id);
+  const repo = container.get("BOOKS_REPOSITORY");
+  const book = await repo.getBook(id);
 
   if (book !== undefined) {
     res.render("books/update", {
@@ -174,10 +170,11 @@ router.get("/update/:id", isAutintificated, async (req, res) => {
 router.get("/delete/:id", isAutintificated, async (req, res) => {
   const { id } = req.params;
 
-  const book = await Book.findById(id);
+  const repo = container.get("BOOKS_REPOSITORY");
+  const book = await repo.getBook(id);
 
   if (book !== undefined) {
-    result = await Book.findByIdAndDelete(id);
+    result = await repo.deleteBook(id);
 
     res.redirect("/books/");
   } else {

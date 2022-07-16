@@ -1,0 +1,7 @@
+myAPIKey=22772d82713f764fb436f3a4238288f4
+url=http://api.weatherstack.com/current
+DB_USERNAME=app-node
+DB_PASSWORD=cwHUm3S93uSriJ
+DB_NAME=myFirstDatabase
+DB_CONNECT_STRING=mongodb+srv://app-node:cwHUm3S93uSriJ@cluster0.rtrpk.mongodb.net/myFirstDatabase?retryWrites=true&w=majority
+COOKIE_SECRET=cookiesecretphrase
