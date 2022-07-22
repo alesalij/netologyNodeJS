@@ -1,4 +1,4 @@
-const multer = require("multer");
+import multer from "multer";
 
 const storage = multer.diskStorage({
   destination(req, file, cb) {
@@ -14,9 +14,9 @@ const storage = multer.diskStorage({
 
 const allowedTypes = ["text/txt", "text/json"];
 
-const fileFilter = (req, file, cb) => {
+const fileFilter = (req: any, file: any, cb: any) => {
   if (allowedTypes.includes(file.mimetype)) cb(null, true);
   else cb(null, false);
 };
-
-module.exports = multer({ storage: storage });
+const fileMiddleware = multer({ storage: storage });
+export { fileMiddleware };

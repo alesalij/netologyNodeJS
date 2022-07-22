@@ -1,12 +1,22 @@
 #! /usr/bin/env node
 
 // создаем объект приложенияconst
-const express = require("express");
-const router = express.Router();
-const { Book } = require("../models/Book.js");
-const fileMiddleware = require("../middleware/file");
+import express from "express";
+import { Request, Response, NextFunction } from "express";
+import {} from "express-session";
 
-const isAutintificated = (req, res, next) => {
+export const router = express.Router();
+import { Book } from "../../mongo/Book.js";
+import { fileMiddleware } from "../../middleware/file";
+
+declare module "express-session" {
+  interface Session {
+    returnTo: string;
+  }
+}
+
+const isAutintificated = (req: Request, res: Response, next: NextFunction) => {
+  console.log(typeof next);
   if (!req.isAuthenticated || !req.isAuthenticated()) {
     if (req.session) {
       req.session.returnTo = req.originalUrl || req.url;
@@ -15,7 +25,9 @@ const isAutintificated = (req, res, next) => {
   }
   next();
 };
-const { container } = require("../container.js");
+import { container } from "../../services/container";
+import { BooksService } from "../../services/book/books.service.js";
+import { IBook } from "../../services/book/IBook.js";
 
 // определяем обработчик для маршрутов
 
@@ -35,34 +47,26 @@ router.post(
       fileName,
       fileBook,
     } = req.body;
-    newBook = "";
-    if (req.file) {
-      newBook = new Book({
-        title: title,
-        description: description,
-        authors: authors,
-        favorite: favorite,
-        fileCover: fileCover,
-        fileName:
-          fileName && fileName !== "" ? fileName : `${req.file?.originalname}`,
-        fileBook: req.file.filename,
-      });
-    } else {
-      newBook = new Book({
-        title: title,
-        description: description,
-        authors: authors,
-        favorite: favorite,
-        fileCover: fileCover,
-        fileName: fileName,
-        fileBook: fileBook,
-      });
-    }
-    try {
-      const repo = container.get("BOOKS_REPOSITORY");
-      await repo.createBook(newBook);
 
-      res.redirect(/books/);
+    const newBook: IBook = {
+      title: title,
+      description: description,
+      authors: authors,
+      favorite: favorite,
+      fileCover: fileCover,
+      fileName: req.file
+        ? fileName && fileName !== ""
+          ? fileName
+          : `${req.file.originalname}`
+        : fileName,
+      fileBook: fileBook,
+    };
+    try {
+      console.log(newBook);
+      const service: BooksService = container.get("BOOKS_SERVICE");
+      await service.createBook(newBook);
+
+      res.redirect("/books/");
     } catch (e) {
       console.log("Fail Create", e);
     }
@@ -71,7 +75,7 @@ router.post(
 
 router.get("/create", (req, res) => {
   const book = new Book({});
-  keys = Object.keys(book.schema.obj);
+  //const keys: any = Object.keys(book.schema.obj);
 
   res.render("books/create", {
     title: "Create book",
@@ -81,8 +85,8 @@ router.get("/create", (req, res) => {
 });
 //get all books
 router.get("/", isAutintificated, async (req, res) => {
-  const repo = container.get("BOOKS_REPOSITORY");
-  const books = await repo.getBooks();
+  const service: BooksService = container.get("BOOKS_SERVICE");
+  const books = await service.getBooks();
 
   res.render("books", { title: "All books", books: books });
 });
@@ -91,8 +95,8 @@ router.get("/", isAutintificated, async (req, res) => {
 router.get("/:id", isAutintificated, async (req, res) => {
   const { id } = req.params;
 
-  const repo = container.get("BOOKS_REPOSITORY");
-  const book = await repo.getBook(id);
+  const service: BooksService = container.get("BOOKS_SERVICE");
+  const book = await service.getBook(id);
 
   if (book !== undefined) {
     // const cnt = await client.incr(id);
@@ -113,9 +117,9 @@ router.post(
   fileMiddleware.single("fileBook"),
   async (req, res) => {
     const { id } = req.params;
-    const repo = container.get("BOOKS_REPOSITORY");
+    const service: BooksService = container.get("BOOKS_SERVICE");
 
-    const book = await repo.getBook(id);
+    const book = await service.getBook(id);
 
     if (book !== undefined) {
       const {
@@ -127,7 +131,7 @@ router.post(
         fileName,
         fileBook,
       } = req.body;
-      newBook = {
+      const newBook = {
         title: title,
         description: description,
         authors: authors,
@@ -136,7 +140,7 @@ router.post(
         fileName: fileName,
         fileBook: fileBook,
       };
-      await repo.updateBook(id, newBook);
+      await service.updateBook(id, newBook);
 
       //await Book.findByIdAndUpdate(id, newBook);
 
@@ -152,8 +156,8 @@ router.post(
 router.get("/update/:id", isAutintificated, async (req, res) => {
   const { id } = req.params;
 
-  const repo = container.get("BOOKS_REPOSITORY");
-  const book = await repo.getBook(id);
+  const service: BooksService = container.get("BOOKS_SERVICE");
+  const book = await service.getBook(id);
 
   if (book !== undefined) {
     res.render("books/update", {
@@ -170,11 +174,12 @@ router.get("/update/:id", isAutintificated, async (req, res) => {
 router.get("/delete/:id", isAutintificated, async (req, res) => {
   const { id } = req.params;
 
-  const repo = container.get("BOOKS_REPOSITORY");
-  const book = await repo.getBook(id);
+  const service: BooksService = container.get("BOOKS_SERVICE");
+  const book = await service.getBook(id);
 
   if (book !== undefined) {
-    result = await repo.deleteBook(id);
+    //const result =
+    await service.deleteBook(id);
 
     res.redirect("/books/");
   } else {
@@ -184,4 +189,3 @@ router.get("/delete/:id", isAutintificated, async (req, res) => {
 });
 
 // начинаем прослушивать подключения на 3000 порту
-module.exports = router;

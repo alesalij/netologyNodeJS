@@ -1,13 +1,10 @@
-interface IBook {
+export interface IBook {
+  id?: string;
   title: string;
   description: string;
   authors: string;
   favorite: string;
   fileCover: string;
   fileName: string;
+  fileBook?: File;
 }
-
-let TYPES = {
-  IBook: Symbol("IBook"),
-};
-export default TYPES;

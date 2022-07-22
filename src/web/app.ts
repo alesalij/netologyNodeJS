@@ -1,21 +1,23 @@
 #! /usr/bin/env node
 
 // создаем объект приложенияconst
-require("dotenv").config();
-express = require("express");
-const passport = require("passport");
-const LocalStrategy = require("passport-local").Strategy;
+
+import dotenv from "dotenv";
+dotenv.config();
+import express from "express";
+import passport from "passport";
+//import { Strategy } from "passport-local";
 //const db = require("./db");
 
-path = require("path");
-const logger = require("morgan"); // логгер
-const cookieParser = require("cookie-parser"); // расшифровка куки
+import path from "path";
+import logger from "morgan"; // логгер
+import cookieParser from "cookie-parser"; // расшифровка куки
 
 //const counterRouter = require("./routes/counter");
-const { default: mongoose } = require("mongoose");
+import { default as mongoose } from "mongoose";
 
-const livereload = require("livereload");
-const connectLiveReload = require("connect-livereload");
+import livereload from "livereload";
+import connectLiveReload from "connect-livereload";
 const liveReloadServer = livereload.createServer();
 liveReloadServer.server.once("connection", () => {
   setTimeout(() => {
@@ -24,37 +26,41 @@ liveReloadServer.server.once("connection", () => {
   }, 100);
 });
 
-const usersApiRouter = require("./routes/api/user");
-const booksApiRouter = require("./routes/api/books");
-const booksRouter = require("./routes/books");
+import { usersApiRouter } from "./routes";
+import { booksApiRouter } from "./routes";
+import { booksRouter } from "./routes";
 
 const app = express();
 app.use(connectLiveReload());
-app.set("views", path.join(__dirname, "/views"));
+
+app.set("views", path.resolve("public/views"));
+console.log(path.resolve("public/views"));
 app.set("view engine", "ejs");
 
-passport.serializeUser(function (user, cb) {
+passport.serializeUser(function (_user: any, cb) {
   process.nextTick(function () {
-    cb(null, { id: user.id, username: user.username });
+    cb(null, { id: _user.id, username: _user.username });
   });
 });
 
-passport.deserializeUser(function (user, cb) {
+passport.deserializeUser(function (_user: any, cb) {
   process.nextTick(function () {
-    return cb(null, user);
+    return cb(null, _user);
   });
 });
 
 app.use(logger("dev")); // логгер
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+import bodyParser from "body-parser";
+import session from "express-session";
 
-app.use(require("body-parser").urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 app.use(
-  require("express-session")({
-    secret: process.env.COOKIE_SECRET,
+  session({
+    secret: process.env.COOKIE_SECRET || "",
     resave: false,
     saveUninitialized: false,
   })
@@ -72,7 +78,7 @@ app.get("/", (req, res) => {
 });
 const PORT = process.env.PORT || 3000;
 
-const connectDB = process.env.DB_CONNECT_STRING;
+const connectDB = process.env.DB_CONNECT_STRING || "";
 
 async function start() {
   try {
